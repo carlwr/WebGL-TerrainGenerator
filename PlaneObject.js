@@ -1,9 +1,10 @@
 
-//console.log(arraysEqual(createCorrectBuffers(3,3)[1], createBuffers(3,3)[1]));
+console.log(arraysEqual(createCorrectBuffers_4_4(3,3)[0], createBuffers(4,4)[0]));
 
 //printBuffers(createCorrectBuffers(3,3));
 
-printBuffers(createBuffers(2,2));
+
+//printBuffers(createBuffers(4,4));
 
 function printBuffers( buffers){
     if(!buffers){
@@ -99,7 +100,96 @@ function createCorrectBuffers_3_3(width,height){
   
     
     return [ positions,normals, textureCoord, indices];
-  }
+}
+
+function createCorrectBuffers_4_4(width,height){
+  const positions = [
+    
+    0, 0, 0,
+    0.3333333333333333, 0, 0,
+    0.6666666666666666, 0, 0,
+    1, 0, 0,
+    0, 0, 0.3333333333333333,
+    0.3333333333333333, 0 ,0.3333333333333333,
+    0.6666666666666666, 0, 0.3333333333333333,
+    1, 0, 0.3333333333333333,
+    0, 0, 0.6666666666666666,
+    0.3333333333333333, 0, 0.6666666666666666,
+    0.6666666666666666, 0, 0.6666666666666666,
+    1 ,0, 0.6666666666666666,
+    0, 0, 1,
+    0.3333333333333333, 0, 1,
+    0.6666666666666666, 0, 1,
+    1, 0, 1,
+    
+  ];
+
+  const normals = [
+    
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+    0.0,  1,  0.0,
+      ];
+
+      const textureCoord = [
+      0, 0,
+      0.3333333333333333, 0,
+      0.6666666666666666 ,0,
+      1, 0,
+      0, 0.3333333333333333,
+      0.3333333333333333, 0.3333333333333333,
+      0.6666666666666666, 0.3333333333333333,
+      1, 0.3333333333333333,
+      0, 0.6666666666666666,
+      0.3333333333333333, 0.6666666666666666,
+      0.6666666666666666, 0.6666666666666666,
+      1, 0.6666666666666666,
+      0, 1,
+      0.3333333333333333, 1,
+      0.6666666666666666, 1,
+      1, 1,
+      
+    ];
+
+    
+  const indices = [
+    0, 1, 4,
+    1, 4, 5,
+    1, 2, 5,
+    2, 5, 6,
+    2, 3, 6,
+    3, 6, 7,
+    4, 5, 8,
+    5, 8, 9,
+    5, 6, 9,
+    6, 9, 10,
+    6, 7, 10,
+    7, 10, 11,
+    8, 9, 12,
+    9, 12, 13,
+    9, 10, 13,
+    10, 13, 14,
+    10, 11, 14,
+    11, 14, 15,
+    
+  ];
+
+  
+  return [ positions,normals, textureCoord, indices];
+}
   
 function createBuffers(width , height){
     width = width -1;
@@ -168,7 +258,7 @@ function createBuffers(width , height){
     }
   
     return [ positions,normals, textureCoord, indices];
-  }
+}
   
 
   function arraysEqual(_arr1, _arr2) {

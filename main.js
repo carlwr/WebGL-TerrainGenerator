@@ -1,6 +1,6 @@
 var cubeRotation = 0.0;
 
-var nmbrOfVertices = 3;
+var planeDimension = 50;
 
 var zoom = -5;
 
@@ -87,7 +87,7 @@ function main() {
   // Here's where we call the routine that builds all the
   // objects we'll be drawing.
   //const buffers = initPlaneBuffers(gl,3,3);
-  const buffers = initPlaneBuffers(gl,nmbrOfVertices,nmbrOfVertices);
+  const buffers = initPlaneBuffers(gl,planeDimension,planeDimension);
   const texture = loadTexture(gl, 'heightmap.png');
 
   var then = 0;
@@ -472,7 +472,7 @@ function drawScene(gl, programInfo, buffers, texture, deltaTime) {
   gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
 
   {
-    const vertexCount = ((nmbrOfVertices -1)*(nmbrOfVertices -1)) * 6;
+    const vertexCount = ((planeDimension -1)*(planeDimension -1)) * 6;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
@@ -612,7 +612,7 @@ function createBuffers(width , height){
 function initPlaneBuffers(gl, width, height) {
 
   //get buffers
-  const buffers = createBuffers(3, 3);
+  const buffers = createBuffers(planeDimension, planeDimension);
   
   // Create a buffer for the cube's vertex positions.
 
@@ -678,4 +678,3 @@ function initPlaneBuffers(gl, width, height) {
   indices: indexBuffer,
   };
 }
-
