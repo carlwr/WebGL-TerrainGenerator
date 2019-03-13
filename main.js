@@ -1,5 +1,9 @@
 var cubeRotation = 0.0;
 
+var nmbrOfVertices = 3;
+
+var zoom = -5;
+
 main();
 
 //
@@ -27,9 +31,14 @@ function main() {
     uniform mat4 uProjectionMatrix;
     varying highp vec2 vTextureCoord;
     varying highp vec3 vLighting;
+    
+    uniform sampler2D uSampler;
     void main(void) {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
       vTextureCoord = aTextureCoord;
+      float y = texture2D(uSampler, vTextureCoord).r;
+      vec4 newVertexPos = aVertexPosition + vec4(0,y,0,0);
+      gl_Position = uProjectionMatrix * uModelViewMatrix * newVertexPos;
+      
       // Apply lighting effect
       highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
       highp vec3 directionalLightColor = vec3(1, 1, 1);
@@ -77,9 +86,9 @@ function main() {
 
   // Here's where we call the routine that builds all the
   // objects we'll be drawing.
-  const buffers = initBuffers(gl);
-
-  const texture = loadTexture(gl, 'cubetexture.png');
+  //const buffers = initPlaneBuffers(gl,3,3);
+  const buffers = initPlaneBuffers(gl,nmbrOfVertices,nmbrOfVertices);
+  const texture = loadTexture(gl, 'heightmap.png');
 
   var then = 0;
 
@@ -95,6 +104,7 @@ function main() {
   }
   requestAnimationFrame(render);
 }
+
 
 //
 // initBuffers
@@ -146,11 +156,6 @@ function initBuffers(gl) {
      1.0,  1.0,  1.0,
      1.0, -1.0,  1.0,
 
-    // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    -1.0,  1.0, -1.0,
   ];
 
   // Now pass the list of positions into WebGL to build the
@@ -195,11 +200,6 @@ function initBuffers(gl) {
      1.0,  0.0,  0.0,
      1.0,  0.0,  0.0,
 
-    // Left
-    -1.0,  0.0,  0.0,
-    -1.0,  0.0,  0.0,
-    -1.0,  0.0,  0.0,
-    -1.0,  0.0,  0.0
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
@@ -236,11 +236,6 @@ function initBuffers(gl) {
     1.0,  0.0,
     1.0,  1.0,
     0.0,  1.0,
-    // Left
-    0.0,  0.0,
-    1.0,  0.0,
-    1.0,  1.0,
-    0.0,  1.0,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),
@@ -262,7 +257,6 @@ function initBuffers(gl) {
     8,  9,  10,     8,  10, 11,   // top
     12, 13, 14,     12, 14, 15,   // bottom
     16, 17, 18,     16, 18, 19,   // right
-    20, 21, 22,     20, 22, 23,   // left
   ];
 
   // Now send the element array to GL
@@ -336,7 +330,7 @@ function isPowerOf2(value) {
 // Draw the scene.
 //
 function drawScene(gl, programInfo, buffers, texture, deltaTime) {
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+  gl.clearColor(0.0, 1.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
   gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
@@ -374,15 +368,11 @@ function drawScene(gl, programInfo, buffers, texture, deltaTime) {
   // start drawing the square.
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
-                 [-0.0, 0.0, -6.0]);  // amount to translate
+                 [-0.0, 0.0, zoom]);  // amount to translate
   mat4.rotate(modelViewMatrix,  // destination matrix
               modelViewMatrix,  // matrix to rotate
-              cubeRotation,     // amount to rotate in radians
-              [0, 0, 1]);       // axis to rotate around (Z)
-  mat4.rotate(modelViewMatrix,  // destination matrix
-              modelViewMatrix,  // matrix to rotate
-              cubeRotation * .7,// amount to rotate in radians
-              [0, 1, 0]);       // axis to rotate around (X)
+              cubeRotation,// amount to rotate in radians
+              [1, 0, 0]);       // axis to rotate around (X)
     
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
@@ -482,7 +472,7 @@ function drawScene(gl, programInfo, buffers, texture, deltaTime) {
   gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
 
   {
-    const vertexCount = 36;
+    const vertexCount = ((nmbrOfVertices -1)*(nmbrOfVertices -1)) * 6;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
@@ -545,3 +535,147 @@ function loadShader(gl, type, source) {
 function setCubeRotation(rotation){
   cubeRotation = rotation;
 }
+
+
+function createBuffers(width , height){
+  width = width -1;
+  height = height - 1;
+  const positions = [];
+  const indices = [];
+  const textureCoord = [];
+  const normals = [];
+
+  bufferPos = 0;
+  indicesPos = 0;
+  normalPos = 0;
+  texturePos = 0;
+
+  multiplier = 1;
+
+  for(i = 0.0; i<= width; i += 1.0){
+      
+      for(j = 0.0; j<= height; j += 1.0){
+          
+          //create vertex coords
+          positions[bufferPos] = (1./width * j) * multiplier;
+          bufferPos++;
+          positions[bufferPos] = 0.;
+          bufferPos++;
+          positions[bufferPos] = (1./height * i) * multiplier;
+          bufferPos++;
+
+          //create texture coords
+          textureCoord[texturePos] = 1./width * j;
+          texturePos++;
+          textureCoord[texturePos] = 1./height * i;
+          texturePos++;
+
+          //create normals
+          normals[normalPos] = 0.;
+          normalPos++;
+          normals[normalPos] = 1.;
+          normalPos++;
+          normals[normalPos] = 0.;
+          normalPos++;
+
+          //calculate number of vertices
+          indicesPos++;
+      }   
+  }
+
+  pos = 0;
+  //calculate vertices
+  for(i = 0; i < indicesPos - (width + 1); i++){
+      if(i %  (width+1) == width){
+          
+          continue;
+      }
+      //first triangle
+      indices[pos] = i;
+      pos ++;
+      indices[pos] = i + 1;
+      pos++;
+      indices[pos] = i + width + 1;
+      pos ++
+      //fill in square
+      indices[pos] = i + 1;
+      pos ++;
+      indices[pos] = i + width + 1;
+      pos++;
+      indices[pos] = i + width + 2;
+      pos ++;
+  }
+
+  return [ positions,normals, textureCoord, indices];
+}
+
+function initPlaneBuffers(gl, width, height) {
+
+  //get buffers
+  const buffers = createBuffers(3, 3);
+  
+  // Create a buffer for the cube's vertex positions.
+
+  const positionBuffer = gl.createBuffer();
+
+  // Select the positionBuffer as the one to apply buffer
+  // operations to from here out.
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+  // Now create an array of positions for the cube.
+  
+
+  const positions = buffers[0];
+
+  // Now pass the list of positions into WebGL to build the
+  // shape. We do this by creating a Float32Array from the
+  // JavaScript array, then use it to fill the current buffer.
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+  // Set up the normals for the vertices, so that we can compute lighting.
+
+  const normalBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+  const vertexNormals = buffers[1];
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
+              gl.STATIC_DRAW);
+
+  // Now set up the texture coordinates for the faces.
+
+  const textureCoordBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+
+  const textureCoordinates = buffers[2];
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),
+              gl.STATIC_DRAW);
+
+  // Build the element array buffer; this specifies the indices
+  // into the vertex arrays for each face's vertices.
+
+  const indexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+  // This array defines each face as two triangles, using the
+  // indices into the vertex array to specify each triangle's
+  // position.
+
+  const indices = buffers[3];
+
+  // Now send the element array to GL
+
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indices), gl.STATIC_DRAW);
+
+  return {
+  position: positionBuffer,
+  normal: normalBuffer,
+  textureCoord: textureCoordBuffer,
+  indices: indexBuffer,
+  };
+}
+
