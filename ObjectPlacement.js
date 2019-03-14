@@ -15,9 +15,9 @@ var weightSlider;
 var opacitySlider;
 
 
-
 function init()
 {
+    testfunction("Edda");
     // Mouse movements
     canvas = document.getElementById("heightmap");
     canvas.addEventListener("mousedown", startDrawing, false);
@@ -56,6 +56,7 @@ function init()
 
 
 }
+
 
 
 function startDrawing(e){
@@ -138,9 +139,6 @@ function print(){
     console.log(context);
 }
 
-function covertHSLtoRGB(value){
-
-}
 
 
 

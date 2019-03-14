@@ -1,5 +1,5 @@
 
-console.log(arraysEqual(createCorrectBuffers_4_4(3,3)[0], createBuffers(4,4)[0]));
+// console.log(arraysEqual(createCorrectBuffers_4_4(3,3)[0], createBuffers(4,4)[0]));
 
 //printBuffers(createCorrectBuffers(3,3));
 
@@ -191,77 +191,77 @@ function createCorrectBuffers_4_4(width,height){
   return [ positions,normals, textureCoord, indices];
 }
   
-function createBuffers(width , height){
-    width = width -1;
-    height = height - 1;
-    const positions = [];
-    const indices = [];
-    const textureCoord = [];
-    const normals = [];
-  
-    bufferPos = 0;
-    indicesPos = 0;
-    normalPos = 0;
-    texturePos = 0;
-    for(i = 0.0; i<= width; i += 1.0){
-        
-        for(j = 0.0; j<= height; j += 1.0){
-            
-            //create vertex coords
-            positions[bufferPos] = 1./width * j;
-            bufferPos++;
-            positions[bufferPos] = 0.;
-            bufferPos++;
-            positions[bufferPos] = 1./height * i;
-            bufferPos++;
-  
-            //create texture coords
-            textureCoord[texturePos] = 1./width * j;
-            texturePos++;
-            textureCoord[texturePos] = 1./height * i;
-            texturePos++;
-  
-            //create normals
-            normals[normalPos] = 0.;
-            normalPos++;
-            normals[normalPos] = 1.;
-            normalPos++;
-            normals[normalPos] = 0.;
-            normalPos++;
-  
-            //calculate number of vertices
-            indicesPos++;
-        }   
-    }
-  
-    pos = 0;
-    //calculate vertices
-    for(i = 0; i < indicesPos - (width + 1); i++){
-        if(i %  (width+1) == width){
-            
-            continue;
-        }
-        //first triangle
-        indices[pos] = i;
-        pos ++;
-        indices[pos] = i + 1;
-        pos++;
-        indices[pos] = i + width + 1;
-        pos ++
-        //fill in square
-        indices[pos] = i + 1;
-        pos ++;
-        indices[pos] = i + width + 1;
-        pos++;
-        indices[pos] = i + width + 2;
-        pos ++;
-    }
-  
-    return [ positions,normals, textureCoord, indices];
-}
+// function createBuffers(width , height){
+//     width = width -1;
+//     height = height - 1;
+//     const positions = [];
+//     const indices = [];
+//     const textureCoord = [];
+//     const normals = [];
+//
+//     bufferPos = 0;
+//     indicesPos = 0;
+//     normalPos = 0;
+//     texturePos = 0;
+//     for(i = 0.0; i<= width; i += 1.0){
+//
+//         for(j = 0.0; j<= height; j += 1.0){
+//
+//             //create vertex coords
+//             positions[bufferPos] = 1./width * j;
+//             bufferPos++;
+//             positions[bufferPos] = 0.;
+//             bufferPos++;
+//             positions[bufferPos] = 1./height * i;
+//             bufferPos++;
+//
+//             //create texture coords
+//             textureCoord[texturePos] = 1./width * j;
+//             texturePos++;
+//             textureCoord[texturePos] = 1./height * i;
+//             texturePos++;
+//
+//             //create normals
+//             normals[normalPos] = 0.;
+//             normalPos++;
+//             normals[normalPos] = 1.;
+//             normalPos++;
+//             normals[normalPos] = 0.;
+//             normalPos++;
+//
+//             //calculate number of vertices
+//             indicesPos++;
+//         }
+//     }
+//
+//     pos = 0;
+//     //calculate vertices
+//     for(i = 0; i < indicesPos - (width + 1); i++){
+//         if(i %  (width+1) == width){
+//
+//             continue;
+//         }
+//         //first triangle
+//         indices[pos] = i;
+//         pos ++;
+//         indices[pos] = i + 1;
+//         pos++;
+//         indices[pos] = i + width + 1;
+//         pos ++
+//         //fill in square
+//         indices[pos] = i + 1;
+//         pos ++;
+//         indices[pos] = i + width + 1;
+//         pos++;
+//         indices[pos] = i + width + 2;
+//         pos ++;
+//     }
+//
+//     return [ positions,normals, textureCoord, indices];
+// }
   
 
-  function arraysEqual(_arr1, _arr2) {
+function arraysEqual(_arr1, _arr2) {
 
     if (!Array.isArray(_arr1) || ! Array.isArray(_arr2) || _arr1.length !== _arr2.length)
       return false;
@@ -276,4 +276,148 @@ function createBuffers(width , height){
 
     return true;
 
+}
+
+function createBuffers(width , height){
+    console.log("Inside create buffers");
+    width = width -1;
+    height = height - 1;
+    const positions = [];           // Vertex buffer
+    const indices = [];             // Triangle buffer
+    const textureCoord = [];        // UV coords buffer
+    const normals = [];             // Normals
+
+    var bufferPos = 0;              // Current position within vertex buffer
+    var indicesPos = 0;             // Counter for how many indices/triangles
+    var normalPos = 0;
+    var texturePos = 0;
+    var multiplier = 1;             // Plane size
+
+    for(var i = 0.0; i<= width; i += 1.0){
+        for(var j = 0.0; j<= height; j += 1.0){
+
+            //create vertex coords
+            positions[bufferPos] = (1./width * j) * multiplier;
+            bufferPos++;
+            positions[bufferPos] = 0.;
+            bufferPos++;
+            positions[bufferPos] = (1./height * i) * multiplier;
+            bufferPos++;
+
+            //create texture coords
+            textureCoord[texturePos] = 1./width * j;
+            texturePos++;
+            textureCoord[texturePos] = 1./height * i;
+            texturePos++;
+
+            //create normals
+            normals[normalPos] = 0.;
+            normalPos++;
+            normals[normalPos] = 1.;
+            normalPos++;
+            normals[normalPos] = 0.;
+            normalPos++;
+
+            //calculate number of vertices
+            indicesPos++;
+        }
+    }
+
+    var pos = 0;
+    //calculate vertices
+    for(i = 0; i < indicesPos - (width + 1); i++){
+        if(i %  (width+1) == width){
+
+            continue;
+        }
+        //first triangle
+        indices[pos] = i;
+        pos ++;
+        indices[pos] = i + 1;
+        pos++;
+        indices[pos] = i + width + 1;
+        pos ++;
+        //fill in square
+        indices[pos] = i + 1;
+        pos ++;
+        indices[pos] = i + width + 1;
+        pos++;
+        indices[pos] = i + width + 2;
+        pos ++;
+    }
+
+    console.log('Returning from create buffers');
+    return [ positions,normals, textureCoord, indices];
+}
+
+function initPlaneBuffers(gl, width, height) {
+    console.log('inside init plane buffers');
+
+    //get buffers
+    const buffers = createBuffers(width, height);
+
+    // Create a buffer for the cube's vertex positions.
+
+    const positionBuffer = gl.createBuffer();
+
+    // Select the positionBuffer as the one to apply buffer
+    // operations to from here out.
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+    // Now create an array of positions for the cube.
+
+
+    const positions = buffers[0];
+
+    // Now pass the list of positions into WebGL to build the
+    // shape. We do this by creating a Float32Array from the
+    // JavaScript array, then use it to fill the current buffer.
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    // Set up the normals for the vertices, so that we can compute lighting.
+
+    const normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+    const vertexNormals = buffers[1];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
+        gl.STATIC_DRAW);
+
+    // Now set up the texture coordinates for the faces.
+
+    const textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+
+    const textureCoordinates = buffers[2];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),
+        gl.STATIC_DRAW);
+
+    // Build the element array buffer; this specifies the indices
+    // into the vertex arrays for each face's vertices.
+
+    const indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+    // This array defines each face as two triangles, using the
+    // indices into the vertex array to specify each triangle's
+    // position.
+
+    const indices = buffers[3];
+
+    // Now send the element array to GL
+
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+        new Uint16Array(indices), gl.STATIC_DRAW);
+
+    console.log('Returning');
+    return {
+        position: positionBuffer,
+        normal: normalBuffer,
+        textureCoord: textureCoordBuffer,
+        indices: indexBuffer
+    };
 }
