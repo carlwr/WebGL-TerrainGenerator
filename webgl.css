@@ -1,0 +1,32 @@
+body {
+    height: 100%;
+
+}
+
+.aligner{
+    padding-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*layout-align: space-between center;*/
+}
+
+.buttons {
+    /*display: table-row;*/
+}
+
+.canvas-container{
+    max-width: 80%;
+}
+
+.canvas {
+    margin: 20px;
+}
+
+#heightmap {
+    /*background-color: greenyellow;*/
+}
+
+#weight-slider {
+
+}

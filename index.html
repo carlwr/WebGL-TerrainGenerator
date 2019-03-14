@@ -2,16 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>WebGL Demo</title>
-    <link rel="stylesheet" href="../webgl.css" type="text/css">
+    <title>Terrain Generator</title>
+    <link rel="stylesheet" href="webgl.css" type="text/css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://www.w3schools.com/lib/w3color.js">-->
   </head>
 
   <body>
-    <canvas id="glcanvas" width="640" height="480"></canvas>
+      <div class="buttons">
+        <div class="weightButton" style="padding: 10px;">
+            Weight
+            <input type="range" min="1" max="100" value="50" class="slider" id="weightSlider">
+        </div>
+          <div class="opacityButton" style="padding: 10px;">
+              Opacity
+              <input type="range" min="1" max="100" value="50" class="slider" id="opacitySlider">
+          </div>
+          <button type="button" class="btn btn-info" id="clearButton">Clear</button>
+          <button type="button" class="btn btn-info" id="printButton">Print</button>
+      </div>
+      <div class="aligner">
+          <div class="canvasContainer">
+            <canvas id="heightmap" class="canvas" width="500" height="500"></canvas>
+            <canvas id="glcanvas" class="canvas" width="500" height="500"></canvas>
+          </div>
+      </div>
   </body>
+
 
   <script src="gl-matrix.js"></script>
   <script src="main.js"></script>
-  
   <script src="ObjectPlacement.js"></script>
+
 </html>
