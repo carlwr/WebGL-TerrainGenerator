@@ -1,6 +1,6 @@
 var cubeRotation = 0.0;
 
-var planeDimension = 50;
+var planeDimension = 5;
 
 var zoom = -5;
 
@@ -35,7 +35,7 @@ function main() {
     uniform sampler2D uSampler;
     void main(void) {
       vTextureCoord = aTextureCoord;
-      float y = texture2D(uSampler, vTextureCoord).r;
+      float y = texture2D(uSampler, vTextureCoord).r * 0.5;
       vec4 newVertexPos = aVertexPosition + vec4(0,y,0,0);
       gl_Position = uProjectionMatrix * uModelViewMatrix * newVertexPos;
       
