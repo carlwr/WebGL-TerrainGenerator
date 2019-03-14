@@ -141,6 +141,7 @@ function redraw(){
         context.closePath();
         context.stroke();
     }
+    print();
 }
 
 function clear(){
@@ -154,7 +155,10 @@ function clear(){
 }
 
 function print(){
-    console.log(context.getImageData(0, 0, 500, 500));
+    var imageData = context.getImageData(0, 0, 500, 500);
+    console.log(imageData);
+    var array = new Uint8Array(imageData.data.buffer);
+    setHeightmap(array);
 }
 
 

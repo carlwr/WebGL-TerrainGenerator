@@ -1,6 +1,7 @@
-var planeDimension  = 5;
-var cubeRotation    = 20.0;
-var zoom            = -5;
+var planeDimension  = 50;
+var cubeRotation    = 0.0;
+var zoom            = -3;
+var textureData;
 
 main();
 
@@ -88,19 +89,19 @@ function main() {
   const buffers = initPlaneBuffers(gl, planeDimension, planeDimension);
   console.log('Buffers: ', buffers);
   //const texture = loadTexture(gl, 'heightmap.png');
-  var textureData = new Uint8Array([
-    25,  64, 128, 
-    200,  64, 128,
-    128,  190, 128,
-    128,  64, 128,
-    128,  64, 128,
-    128,  12, 128,
-    12,  64, 128,
-    128,  64, 128,
-    128,  6, 208,
-    28,  64, 228
-  ]);
-  const texture = createHeightmapTexture(gl,textureData);
+  // var textureData = new Uint8Array([
+  //   25,  64, 128,
+  //   200,  64, 128,
+  //   128,  190, 128,
+  //   128,  64, 128,
+  //   128,  64, 128,
+  //   128,  12, 128,
+  //   12,  64, 128,
+  //   128,  64, 128,
+  //   128,  6, 208,
+  //   28,  64, 228
+  // ]);
+
   var then = 0;
 
   // Draw the scene repeatedly
@@ -109,11 +110,18 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
+    const texture = createHeightmapTexture(gl,textureData);
+
     drawScene(gl, programInfo, buffers, texture, deltaTime);
 
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
+}
+
+
+function setHeightmap(heightMapData){
+  textureData = heightMapData;
 }
 
 function createHeightmapTexture(gl, heightmapData) {
@@ -123,7 +131,7 @@ gl.bindTexture(gl.TEXTURE_2D, texture);
 const alignment = 1;
 gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
 // Fill the texture with a 1x1 blue pixel.
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 2, 1, 0, gl.RGB, gl.UNSIGNED_BYTE,
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 500, 500, 0, gl.RGBA, gl.UNSIGNED_BYTE,
              heightmapData );
  
   // set the filtering so we don't need mips and it's not filtered
