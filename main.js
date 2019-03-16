@@ -1,6 +1,6 @@
 var planeDimension  = 50;
-var cubeRotation    = 0.0;
-var zoom            = -3;
+var cubeRotation    = 10.0;
+var zoom            = -2;
 var textureData;
 
 main();
@@ -238,11 +238,11 @@ function drawScene(gl, programInfo, buffers, texture, deltaTime) {
   // start drawing the square.
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
-                 [-0.0, 0.0, zoom]);  // amount to translate
+                 [-0.5, 0.0, zoom]);  // amount to translate
   mat4.rotate(modelViewMatrix,  // destination matrix
               modelViewMatrix,  // matrix to rotate
               cubeRotation,// amount to rotate in radians
-              [1, 0, 0]);       // axis to rotate around (X)
+              [1,0, 0]);       // axis to rotate around (X)
     
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
@@ -349,7 +349,7 @@ function drawScene(gl, programInfo, buffers, texture, deltaTime) {
   }
   
   // Update the rotation for the next draw
-
+  //cubeRotation += 1 * deltaTime;
 }
 
 //
