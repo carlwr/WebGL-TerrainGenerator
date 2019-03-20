@@ -3,6 +3,7 @@ var cubeRotation    = 170.0;
 var zoom            = -2;
 var textureData;
 var colorData;
+var wave = 0;
 
 main();
 
@@ -23,20 +24,33 @@ function main() {
   // Vertex shader program
 
   const vsSource = `
+    
     attribute vec4 aVertexPosition;
     attribute vec3 aVertexNormal;
     attribute vec2 aTextureCoord;
+    
+    uniform float uTime;
+
     uniform mat4 uNormalMatrix;
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
     varying highp vec2 vTextureCoord;
     varying highp vec3 vLighting;
-    
     uniform sampler2D uSampler;
     void main(void) {
       vTextureCoord = aTextureCoord;
+
       float y = texture2D(uSampler, vTextureCoord).r * 0.5;
-      vec4 newVertexPos = aVertexPosition + vec4(0,y,0,0);
+      float h = 0.0;
+      if(y == 0.0){
+        float freq = 30.0;
+        float amp = 0.01;
+        float angle = (uTime + aVertexPosition.x + aVertexPosition.y )*freq;
+        h= sin(angle)*amp;
+        y = 0.02;
+      }
+     
+      vec4 newVertexPos = aVertexPosition + vec4(0,y,0,0) +vec4(0,h,0,0) ;
       gl_Position = uProjectionMatrix * uModelViewMatrix * newVertexPos;
       
       // Apply lighting effect
@@ -57,7 +71,17 @@ function main() {
     uniform sampler2D uColorSampler;
     void main(void) {
       highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
-      gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
+      if(texelColor == vec4(0.0,0.0,0.0,1.0)){
+        gl_FragColor = vec4(vec3(0.6,0.8,1.0) * vLighting, 1.0);
+      }
+      else if(texelColor.r < 0.03 && texelColor.g < 0.03 && texelColor.b < 0.03){
+        gl_FragColor = vec4(vec3(0.8,0.9,1.0) * vLighting, 1.0);
+        
+      }
+      else{
+        gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
+    
+      }
     }
   `;
 
@@ -82,6 +106,7 @@ function main() {
       normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
       uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
       uColorSampler: gl.getUniformLocation(shaderProgram, 'uColorSampler'),
+      uTime: gl.getUniformLocation(shaderProgram, 'uTime'),
     }
   };
 
@@ -104,6 +129,7 @@ function main() {
   //   28,  64, 228
   // ]);
 
+  
   var then = 0;
 
   // Draw the scene repeatedly
@@ -113,7 +139,7 @@ function main() {
     then = now
 
     const texture = createTexture(gl,textureData)
-    colorData = textureData
+    
     const colorTexture = createTexture(gl,colorData)
     //colorTexture.forEach(element => {
     //  element  = 0;
@@ -130,6 +156,10 @@ function main() {
 function setHeightmap(heightMapData){
   textureData = heightMapData;
 }
+function setColorData(data){
+  colorData = data;
+}
+
 
 function createTexture(gl, heightmapData) {
  var texture = gl.createTexture();
@@ -207,7 +237,7 @@ function isPowerOf2(value) {
 //
 // Draw the scene.
 //
-function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime) {
+function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, date) {
   gl.clearColor(0.0, 1.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -351,6 +381,11 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime) {
   gl.bindTexture(gl.TEXTURE_2D, colorTexture);
 
   // Tell the shader we bound the texture to texture unit 0
+  
+  wave += deltaTime*0.1;
+  console.log(wave);
+  
+  gl.uniform1f(programInfo.uniformLocations.uTime, wave);
   gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
   gl.uniform1i(programInfo.uniformLocations.uColorSampler, 1);
 
