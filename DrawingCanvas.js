@@ -59,8 +59,9 @@ function init()
     context.strokeStyle = 'rgb(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
     context.lineWidth = weightSlider.value;                         // Size Initialize value as weight slider
     context.lineJoin = "round";             // Style
+    context.shadowColor = 'rgb(255, 255, 255)';
+    context.shadowBlur  = 100;
 }
-
 
 
 function startDrawing(e){
