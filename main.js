@@ -69,12 +69,15 @@ function main() {
     varying highp vec2 vTextureCoord;
     varying highp vec3 vLighting;
     uniform sampler2D uColorSampler;
+    uniform sampler2D uSampler;
     void main(void) {
       highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
-      if(texelColor == vec4(0.0,0.0,0.0,1.0)){
+      
+      highp vec4 texelHeight = texture2D(uSampler, vTextureCoord);
+      if(texelHeight == vec4(0.0,0.0,0.0,1.0)){
         gl_FragColor = vec4(vec3(0.6,0.8,1.0) * vLighting, 1.0);
       }
-      else if(texelColor.r < 0.03 && texelColor.g < 0.03 && texelColor.b < 0.03){
+      else if(texelHeight.r < 0.03 && texelHeight.g < 0.03 && texelHeight.b < 0.03){
         gl_FragColor = vec4(vec3(0.8,0.9,1.0) * vLighting, 1.0);
         
       }
