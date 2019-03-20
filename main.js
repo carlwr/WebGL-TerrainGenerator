@@ -77,12 +77,12 @@ function main() {
       if(texelHeight == vec4(0.0,0.0,0.0,1.0)){
         gl_FragColor = vec4(vec3(0.6,0.8,1.0) * vLighting, 1.0);
       }
-      else if(texelHeight.r < 0.03 && texelHeight.g < 0.03 && texelHeight.b < 0.03){
+      else if(texelHeight.r < 0.1 && texelHeight.g < 0.1 && texelHeight.b < 0.1){
         gl_FragColor = vec4(vec3(0.8,0.9,1.0) * vLighting, 1.0);
         
       }
       else{
-        gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
+        gl_FragColor = vec4(texelHeight.rgb * vLighting, texelHeight.a);
     
       }
     }
@@ -386,7 +386,6 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, d
   // Tell the shader we bound the texture to texture unit 0
   
   wave += deltaTime*0.1;
-  console.log(wave);
   
   gl.uniform1f(programInfo.uniformLocations.uTime, wave);
   gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
