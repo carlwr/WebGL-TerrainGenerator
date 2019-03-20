@@ -58,6 +58,7 @@ body {
 
 .colorpicker{
     display: flex;
+    min-height: 80%;
     justify-content: space-around;
     flex-direction: column;
 }

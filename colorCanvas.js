@@ -10,6 +10,12 @@ var colorCtx;
 // var color;
 
 
+$(".type").click(function(){
+    $(".type").removeClass("active");
+    $(this).addClass("active");
+});
+
+
 function init(){
     colorCanvas = document.getElementById("colormap");
     colorCanvas.addEventListener("mousedown", startColoring, false);
@@ -21,6 +27,15 @@ function init(){
     colorCtx.fillStyle = "black";
     colorCtx.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
+    weightSlider2 = document.getElementById("weightSlider2");
+    context.lineWidth = weightSlider.value;                         // Size Initialize value as weight slider
+    // context.lineWidth = 400;
+    weightSlider2.oninput = function(){
+        console.log('slider', this.value);
+        colorCtx.lineWidth = this.value;                         // Size Initialize value as weight slider
+    };
+
+    colorCtx.lineWidth = weightSlider2.value;
 }
 
 
