@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", init, false);
 
 var weightSlider2;
 var colorCanvas;
-var color;
+var colorCtx;
+// var color;
 
 
 function init(){
@@ -16,9 +17,9 @@ function init(){
     colorCanvas.addEventListener("mousemove", colorDraw, false);
     // canvas.addEventListener("mouseleave", stopDrawing, false);
 
-    context = colorCanvas.getContext("2d");
-    context.fillStyle = "black";
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+    colorCtx = colorCanvas.getContext("2d");
+    colorCtx.fillStyle = "black";
+    colorCtx.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
 }
 
