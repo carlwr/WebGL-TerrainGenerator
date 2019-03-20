@@ -139,7 +139,7 @@ function main() {
     then = now
 
     const texture = createTexture(gl,textureData)
-    colorData = textureData
+    
     const colorTexture = createTexture(gl,colorData)
     //colorTexture.forEach(element => {
     //  element  = 0;
@@ -156,6 +156,10 @@ function main() {
 function setHeightmap(heightMapData){
   textureData = heightMapData;
 }
+function setColorData(data){
+  colorData = data;
+}
+
 
 function createTexture(gl, heightmapData) {
  var texture = gl.createTexture();
