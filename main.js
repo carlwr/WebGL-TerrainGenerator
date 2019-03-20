@@ -1,7 +1,8 @@
 var planeDimension  = 50;
-var cubeRotation    = 10.0;
+var cubeRotation    = 170.0;
 var zoom            = -2;
 var textureData;
+var colorData;
 
 main();
 
@@ -53,9 +54,9 @@ function main() {
   const fsSource = `
     varying highp vec2 vTextureCoord;
     varying highp vec3 vLighting;
-    uniform sampler2D uSampler;
+    uniform sampler2D uColorSampler;
     void main(void) {
-      highp vec4 texelColor = texture2D(uSampler, vTextureCoord);
+      highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
       gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
     }
   `;
@@ -80,6 +81,7 @@ function main() {
       modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
       normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
       uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
+      uColorSampler: gl.getUniformLocation(shaderProgram, 'uColorSampler'),
     }
   };
 
@@ -106,17 +108,22 @@ function main() {
 
   // Draw the scene repeatedly
   function render(now) {
-    now *= 0.001;  // convert to seconds
-    const deltaTime = now - then;
-    then = now;
+    now *= 0.001  // convert to seconds
+    const deltaTime = now - then
+    then = now
 
-    const texture = createHeightmapTexture(gl,textureData);
+    const texture = createTexture(gl,textureData)
+    colorData = textureData
+    const colorTexture = createTexture(gl,colorData)
+    //colorTexture.forEach(element => {
+    //  element  = 0;
+    //});
+    
+    drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime);
 
-    drawScene(gl, programInfo, buffers, texture, deltaTime);
-
-    requestAnimationFrame(render);
+    requestAnimationFrame(render)
   }
-  requestAnimationFrame(render);
+  requestAnimationFrame(render)
 }
 
 
@@ -124,7 +131,7 @@ function setHeightmap(heightMapData){
   textureData = heightMapData;
 }
 
-function createHeightmapTexture(gl, heightmapData) {
+function createTexture(gl, heightmapData) {
  var texture = gl.createTexture();
 gl.bindTexture(gl.TEXTURE_2D, texture);
  
@@ -133,6 +140,7 @@ gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
 // Fill the texture with a 1x1 blue pixel.
 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 500, 500, 0, gl.RGBA, gl.UNSIGNED_BYTE,
              heightmapData );
+
  
   // set the filtering so we don't need mips and it's not filtered
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -199,7 +207,7 @@ function isPowerOf2(value) {
 //
 // Draw the scene.
 //
-function drawScene(gl, programInfo, buffers, texture, deltaTime) {
+function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime) {
   gl.clearColor(0.0, 1.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -338,8 +346,13 @@ function drawScene(gl, programInfo, buffers, texture, deltaTime) {
   // Bind the texture to texture unit 0
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
+  gl.activeTexture(gl.TEXTURE1);
+  // Bind the colorTexture to texture unit 1
+  gl.bindTexture(gl.TEXTURE_2D, colorTexture);
+
   // Tell the shader we bound the texture to texture unit 0
   gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+  gl.uniform1i(programInfo.uniformLocations.uColorSampler, 1);
 
   {
     const vertexCount = ((planeDimension -1)*(planeDimension -1)) * 6;
