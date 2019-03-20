@@ -45,7 +45,7 @@ function main() {
       if(y == 0.0){
         float freq = 30.0;
         float amp = 0.01;
-        float angle = (uTime + aVertexPosition.x)*freq;
+        float angle = (uTime + aVertexPosition.x + aVertexPosition.y )*freq;
         h= sin(angle)*amp;
         y = 0.02;
       }
