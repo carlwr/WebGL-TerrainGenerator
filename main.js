@@ -171,7 +171,7 @@ gl.bindTexture(gl.TEXTURE_2D, texture);
 const alignment = 1;
 gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
 // Fill the texture with a 1x1 blue pixel.
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 500, 500, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 250, 250, 0, gl.RGBA, gl.UNSIGNED_BYTE,
              heightmapData );
 
  
