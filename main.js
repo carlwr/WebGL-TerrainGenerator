@@ -72,10 +72,10 @@ function main() {
     void main(void) {
       highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
       if(texelColor == vec4(0.0,0.0,0.0,1.0)){
-        gl_FragColor = vec4(vec3(0.0,0.0,0.7) * vLighting, 0.9);
+        gl_FragColor = vec4(vec3(0.6,0.8,1.0) * vLighting, 1.0);
       }
       else if(texelColor.r < 0.03 && texelColor.g < 0.03 && texelColor.b < 0.03){
-        gl_FragColor = vec4(vec3(0.0,0.0,1.0) * vLighting, 0.9);
+        gl_FragColor = vec4(vec3(0.8,0.9,1.0) * vLighting, 1.0);
         
       }
       else{
