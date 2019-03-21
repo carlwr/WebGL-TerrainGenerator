@@ -1,5 +1,5 @@
 var planeDimension  = 50;
-var cubeRotation    = 170.0;
+var cubeRotation    = [0,0];
 var zoom            = -2;
 var textureData;
 var colorData;
@@ -77,7 +77,7 @@ function main() {
       if(texelHeight == vec4(0.0,0.0,0.0,1.0)){
         gl_FragColor = vec4(vec3(0.6,0.8,1.0) * vLighting, 1.0);
       }
-      else if(texelHeight.r < 0.1 && texelHeight.g < 0.1 && texelHeight.b < 0.1){
+      else if(texelHeight.r < 0.03 && texelHeight.g < 0.03 && texelHeight.b < 0.03){
         gl_FragColor = vec4(vec3(0.8,0.9,1.0) * vLighting, 1.0);
         
       }
@@ -277,13 +277,18 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, d
 
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
+  
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
-                 [-0.5, 0.0, zoom]);  // amount to translate
+                 [0, 0.0, zoom]);  // amount to translate
   mat4.rotate(modelViewMatrix,  // destination matrix
               modelViewMatrix,  // matrix to rotate
-              cubeRotation,// amount to rotate in radians
+              cubeRotation[1],// amount to rotate in radians
               [1,0, 0]);       // axis to rotate around (X)
+  mat4.rotate(modelViewMatrix,  // destination matrix
+              modelViewMatrix,  // matrix to rotate
+              cubeRotation[0],// amount to rotate in radians
+              [0,1, 0]);       // axis to rotate around (X)
     
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);

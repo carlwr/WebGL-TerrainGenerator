@@ -1,39 +1,68 @@
 
+var mousePosition = [250,250];
+var mouseRadius = 10;
+var currentAngle = [0,0]; // [x-axis, y-axis] degrees
 
-function getPosition(event)
-{
-    var x;
-    var y;
-    var canvas = document.getElementById("heightmap");
+var lastX = -1;
+var lastY = -1;
+var dragging = false;
 
-    if (event.x && event.y)
-    {
-        x = event.x;
-        y = event.y;
+var canvas = document.querySelector('#glcanvas');
+
+canvas.addEventListener('mousedown', function(event) {
+    var x = event.clientX;
+    var y = event.clientY;
+
+    var rect = event.target.getBoundingClientRect();
+    if(rect.left <= x 
+    && x <= rect.right 
+    && rect.top <= y 
+    && y <= rect.bottom
+    ) {
+    lastX = x; 
+    lastY = y;
+    mousePosition[0] = x;
+    mousePosition[1] = canvas.height - y;
+    dragging = true;
+    
     }
-    else // Firefox method to get the position
-    {
-        x = event.clientX + document.body.scrollLeft +
-            document.documentElement.scrollLeft;
-        y = event.clientY + document.body.scrollTop +
-            document.documentElement.scrollTop;
-    }
+}, false);
 
-    x -= canvas.offsetLeft;
-    y -= canvas.offsetTop;
-    posX = x;
-    posY = y;
-    setCubeRotation(posX);
 
-    console.log('X: ', x);
-    console.log('Y: ', y);
-}
+canvas.addEventListener('mouseup', function(event) {
+    
+    console.log("angle: " + cubeRotation[1]);
+    dragging = false;
+    
+}, false);
 
-function getX(){
-    return posX;
-}
+this.canvas.addEventListener('mousewheel', function(event) {
+    zoom += event.wheelDelta * 0.001
+ }, false);
 
-function getY(){
-    return posY;
-}
+canvas.addEventListener('mousemove', function(event) {
+     var x = event.clientX;
+     var y = event.clientY;
+     if(dragging) {
+       //put some kind of dragging logic in here
+       //Here is a roation example
+       var factor = 1/canvas.height;
+       var dx = factor * (x - lastX);
+       var dy = factor * (y - lastY);
+       
+       //Limit x-axis roation angle to -90 to 90 degrees
+       currentAngle[0] = dx; //Math.max(Math.min(currentAngle[0] + dy, 90), -90);
+       currentAngle[1] = dy;//currentAngle[1] + dx;
+ 
+       mousePosition[0] = x;
+       mousePosition[1] = canvas.height - y;
+        
+        cubeRotation[0] += currentAngle[0];
+        cubeRotation[1] += currentAngle[1];
+     }
+     lastX = x;
+     lastY = y;
+   
+}, false);
+
 
