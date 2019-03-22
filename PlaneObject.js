@@ -6,9 +6,13 @@
 
 //printBuffers(createBuffers(4,4));
 
+const indices = [];
+const positions = []; 
+var textureCoord = []; 
+var normalBuffer
+
 function printBuffers( buffers){
     if(!buffers){
-        console.log("NO BUFFERS");
         
     }
     
@@ -279,13 +283,12 @@ function arraysEqual(_arr1, _arr2) {
 }
 
 function createBuffers(width , height){
-    console.log("Inside create buffers");
     width = width -1;
     height = height - 1;
-    const positions = [];           // Vertex buffer
-    const indices = [];             // Triangle buffer
-    const textureCoord = [];        // UV coords buffer
-    const normals = [];             // Normals
+             // Vertex buffer
+               // Triangle buffer
+            // UV coords buffer
+    var normals = [];             // Normals
 
     var bufferPos = 0;              // Current position within vertex buffer
     var indicesPos = 0;             // Counter for how many indices/triangles
@@ -312,7 +315,7 @@ function createBuffers(width , height){
             textureCoord[texturePos] = 1./height * i;
             texturePos++;
             //}
-
+            
             //create normals
             normals[normalPos] = 0.;
             normalPos++;
@@ -320,7 +323,7 @@ function createBuffers(width , height){
             normalPos++;
             normals[normalPos] = 0.;
             normalPos++;
-
+            
             //calculate number of vertices
             indicesPos++;
         }
@@ -343,18 +346,197 @@ function createBuffers(width , height){
         //fill in square
         indices[pos] = i + 1;
         pos ++;
-        indices[pos] = i + width + 1;
-        pos++;
         indices[pos] = i + width + 2;
+        pos++;
+        indices[pos] = i + width + 1;
         pos ++;
     }
-
-    console.log('Returning from create buffers');
+    
     return [ positions,normals, textureCoord, indices];
 }
 
+function calculateNormals(width, height, updatedTextureData){
+  
+  var calcNormals = []
+  var count = 0;
+  var pixeldist = updatedTextureData.length /(width*height-1);
+  /*
+  for(var i = 0; i < 16; i++){
+    console.log(" ");
+    console.log("pixelHeight on " + Math.floor(pixeldist * i) + " / " + updatedTextureData.length);
+    
+    console.log(updatedTextureData[Math.floor(pixeldist * i)] );
+    console.log(" " + width * height);
+    
+
+  }
+  */
+  var pixelPos = Math.sqrt(updatedTextureData.length/4)
+
+  for(var i = 0; i < indices.length; i += 3){
+    // console.log("Now working on " + i);
+    var u1 = textureCoord[indices[i]*2]
+    var v1 = textureCoord[indices[i]*2 + 1]
+    if(v1 == 0){
+      pixeldist1 =  pixelPos * u1 * 4 + (pixelPos)*(pixelPos*v1) * 4
+      
+    }else{
+      pixeldist1 =   (pixelPos)*(pixelPos*v1) * 4 - pixelPos * (1-u1) * 4
+    }
+    //console.log(indices[i] + " "  + u1 + " "  + v1);
+    off = 4;
+    
+    if(u1 == 0){
+      pixeldist1 += off;
+    }
+    else if(u1 == 1){
+      pixeldist1 -= off;
+    }
+    
+    var u2 = textureCoord[indices[i+1]*2]
+    var v2 = textureCoord[indices[i+1]*2 + 1]
+    if(v1 == 0){
+      pixeldist2 =  pixelPos * u2 * 4 + (pixelPos)*(pixelPos*v2) * 4
+      
+    }else{
+      pixeldist2 =   (pixelPos)*(pixelPos*v2) * 4 - pixelPos * (1-u2) * 4
+    }
+    if(u2 == 0){
+      pixeldist2 += off;
+    }
+    else if(u2 == 1){
+      pixeldist2 -= off;
+    }
+
+    var u3 = textureCoord[indices[i+2]*2]
+    var v3 = textureCoord[indices[i+2]*2 + 1]
+    if(v1 == 0){
+      pixeldist3 =  pixelPos * u3 * 4 + (pixelPos)*(pixelPos*v3) * 4
+      
+    }else{
+      pixeldist3 =   (pixelPos)*(pixelPos*v3) * 4 - pixelPos * (1-u3) * 4
+    }
+    if(u3 == 0){
+      pixeldist3 += off;
+    }
+    else if(u3 == 1){
+      pixeldist3 -= off;
+    }
+    //console.log(i + " " + pixeldist + " u " + textureCoord[indices[i]*2] * (width-1) + " v " + textureCoord[indices[i]*2 + 1] * (height-1));
+    
+
+    texturePos1 = Math.floor(pixeldist1);
+    texturePos2 = Math.floor(pixeldist2);
+    texturePos3 = Math.floor(pixeldist3);
+    //console.log(indices[i] + " : " + pixeldist1,indices[i+1] + " : " + pixeldist2,indices[i+2] + " : " + pixeldist3);
+    
+
+    var offset1 = updatedTextureData[texturePos1] * 0.5
+    var offset2 = updatedTextureData[texturePos2] * 0.5
+    var offset3 = updatedTextureData[texturePos3] * 0.5
+    //console.log(indices[i] + " " + indices[i+1] + " " + indices[i+2]);
+    //console.log(updatedTextureData);
+    
+    //console.log(indices.length + "   " +updatedTextureData.length + "      " +texturePos1 + " " + texturePos2 + " " + texturePos3);
+    //console.log(indices[i], offset1,indices[i+1] ,offset2,indices[i+2], offset3)
+    
+    
+    var pos1 = [positions[indices[i] * 3],positions[indices[i] * 3 + 1 ] + offset1,positions[indices[i] * 3+2]];
+    var pos2 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset2,positions[indices[i+1] * 3 + 2]];
+    var pos3 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset3,positions[indices[i+2]* 3 +2]];
+    //console.log(pos1 + " " + pos2 + " " + pos3);
+    
+    var tangent = [pos2[0] - pos1[0],pos2[1] - pos1[1],pos2[2] - pos1[2]]
+    var bitangent = [pos3[0] - pos1[0],pos3[1] - pos1[1],pos3[2] - pos1[2]]
+    tangent = normalize(tangent)
+    bitangent = normalize(bitangent)
+
+    var normalvector = normalize(cross(bitangent, tangent))
+    
+    
+    calcNormals[count] = normalvector[0];
+    count ++;
+    calcNormals[count] = normalvector[1];
+    count ++;
+    calcNormals[count] = normalvector[2];
+    count ++;
+    
+    
+    var pos3 = [positions[indices[i] * 3],positions[indices[i] * 3+1] + offset3,positions[indices[i] * 3+2]];
+    var pos1 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset1,positions[indices[i+1] * 3 + 2]];
+    var pos2 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset2,positions[indices[i+2]* 3 +2]];
+    
+    var tangent = [pos2[0] - pos1[0],pos2[1] - pos1[1],pos2[2] - pos1[2]]
+    
+    var bitangent = [pos3[0] - pos1[0],pos3[1] - pos1[1],pos3[2] - pos1[2]]
+    tangent = normalize(tangent)
+    bitangent = normalize(bitangent)
+
+    var normalvector = normalize(cross(bitangent, tangent))
+
+    calcNormals[count] = normalvector[0];
+    count ++;
+    calcNormals[count] = normalvector[1];
+    count ++;
+    calcNormals[count] = normalvector[2];
+    count ++;
+    
+    var pos2 = [positions[indices[i] * 3],positions[indices[i] * 3+1] + offset2,positions[indices[i] * 3+2]];
+    var pos3 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset3,positions[indices[i+1] * 3 + 2]];
+    var pos1 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset1,positions[indices[i+2]* 3 +2]];
+    
+    var tangent = [pos2[0] - pos1[0],pos2[1] - pos1[1],pos2[2] - pos1[2]]
+    
+    var bitangent = [pos3[0] - pos1[0],pos3[1] - pos1[1],pos3[2] - pos1[2]]
+    tangent = normalize(tangent)
+    bitangent = normalize(bitangent)
+
+    var normalvector = normalize(cross(bitangent, tangent))
+    
+    calcNormals[count] = normalvector[0];
+    count ++;
+    calcNormals[count] = normalvector[1];
+    count ++;
+    calcNormals[count] = normalvector[2];
+    count ++;
+  }
+  //onsole.log(calcNormals);
+  return calcNormals;
+}
+
+function cross(vec1, vec2){
+  return [vec1[1] * vec2[2] - vec1[2] * vec2[1],
+          vec1[2] * vec2[0] - vec1[0] * vec2[2],
+          vec1[0] * vec2[1] - vec1[1] * vec2[0]
+        ]
+}
+
+function normalize(vector){
+  normal = vector;
+  var len = Math.sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
+  normal[0] /= len;
+  normal[1] /= len;
+  normal[2] /= len;
+  return normal;
+}
+
+function initNormals(gl, width, height, updatedTextureData){
+  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+  var vertexNormals = calculateNormals(width, height, updatedTextureData);
+  for(var i = 0; i < vertexNormals.length; i+=3){
+    
+    
+    
+ // console.log(vertexNormals[i] + " "  + vertexNormals[i+1] + " " + vertexNormals[i + 2]);
+  }
+  
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
+        gl.STATIC_DRAW);
+  return normalBuffer
+}
+
 function initPlaneBuffers(gl, width, height) {
-    console.log('inside init plane buffers');
 
     //get buffers
     const buffers = createBuffers(width, height);
@@ -381,7 +563,7 @@ function initPlaneBuffers(gl, width, height) {
 
     // Set up the normals for the vertices, so that we can compute lighting.
 
-    const normalBuffer = gl.createBuffer();
+    normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 
     const vertexNormals = buffers[1];
@@ -416,11 +598,10 @@ function initPlaneBuffers(gl, width, height) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
         new Uint16Array(indices), gl.STATIC_DRAW);
 
-    console.log('Returning');
     return {
-        position: positionBuffer,
-        normal: normalBuffer,
-        textureCoord: textureCoordBuffer,
+        positions: positionBuffer,
+        vertexNormals: normalBuffer,
+        textureCoordinates: textureCoordBuffer,
         indices: indexBuffer
     };
 }

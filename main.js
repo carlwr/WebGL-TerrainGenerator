@@ -1,9 +1,12 @@
-var planeDimension  = 50;
+var planeDimension  = 11;
 var cubeRotation    = [0,0];
 var zoom            = -2;
 var textureData;
 var colorData;
 var wave = 0;
+
+var gl;
+var buffers;
 
 main();
 
@@ -12,7 +15,8 @@ main();
 //
 function main() {
   const canvas = document.querySelector('#glcanvas');
-  const gl = canvas.getContext('webgl');
+  gl = canvas.getContext('webgl');
+  
 
   // If we don't have a GL context, give up now
 
@@ -34,9 +38,14 @@ function main() {
     uniform mat4 uNormalMatrix;
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
+
     varying highp vec2 vTextureCoord;
     varying highp vec3 vLighting;
+    
+    varying highp vec3 vNormal;
+
     uniform sampler2D uSampler;
+
     void main(void) {
       vTextureCoord = aTextureCoord;
 
@@ -48,15 +57,17 @@ function main() {
         float angle = (uTime + aVertexPosition.x + aVertexPosition.y )*freq;
         h= sin(angle)*amp;
         y = 0.02;
-      }
-     
+      } 
+
       vec4 newVertexPos = aVertexPosition + vec4(0,y,0,0) +vec4(0,h,0,0) ;
       gl_Position = uProjectionMatrix * uModelViewMatrix * newVertexPos;
       
+      vNormal = mat3(uNormalMatrix) * aVertexNormal;
+
       // Apply lighting effect
-      highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
-      highp vec3 directionalLightColor = vec3(1, 1, 1);
-      highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+      highp vec3 ambientLight = vec3(0.1, 0.1, 0.1);
+      highp vec3 directionalLightColor = vec3(0.3, 0.3, 0.3);
+      highp vec3 directionalVector = normalize(vec3(0.0, 1.0, 0.0));
       highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
       highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
       vLighting = ambientLight + (directionalLightColor * directional);
@@ -68,23 +79,34 @@ function main() {
   const fsSource = `
     varying highp vec2 vTextureCoord;
     varying highp vec3 vLighting;
+    varying highp vec3 vNormal;
     uniform sampler2D uColorSampler;
     uniform sampler2D uSampler;
+
     void main(void) {
       highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
+
       
+      highp vec3 ambientLight = vec3(0.01, 0.01, 0.01);
+      highp vec3 directionalLightColor = vec3(0.2, 0.2, 0.2);
+      highp vec3 directionalVector = normalize(vec3(0, 1, 0));
+      highp vec3 normal = normalize(vNormal);
+      highp float light = max(dot(normal, directionalVector),0.0);
+      highp vec3 lighting = ambientLight + (directionalLightColor * light);
+
       highp vec4 texelHeight = texture2D(uSampler, vTextureCoord);
       if(texelHeight == vec4(0.0,0.0,0.0,1.0)){
-        gl_FragColor = vec4(vec3(0.6,0.8,1.0) * vLighting, 1.0);
+        gl_FragColor = vec4(vec3(0.6,0.8,1.0) , 1.0);
       }
       else if(texelHeight.r < 0.03 && texelHeight.g < 0.03 && texelHeight.b < 0.03){
-        gl_FragColor = vec4(vec3(0.8,0.9,1.0) * vLighting, 1.0);
+        gl_FragColor = vec4(vec3(0.8,0.9,1.0), 1.0);
         
       }
       else{
-        gl_FragColor = vec4(texelHeight.rgb * vLighting, texelHeight.a);
+        gl_FragColor = vec4(texelColor.rgb, texelHeight.a);
     
       }
+      gl_FragColor.rgb += lighting;
     }
   `;
 
@@ -116,8 +138,11 @@ function main() {
   // Here's where we call the routine that builds all the
   // objects we'll be drawing.
   //const buffers = initPlaneBuffers(gl,3,3);
-  const buffers = initPlaneBuffers(gl, planeDimension, planeDimension);
-  console.log('Buffers: ', buffers);
+  buffers = initPlaneBuffers(gl, planeDimension, planeDimension);
+  //buffers.vertexNormals = calculateNormals(buffers);
+  //console.log(buffers.normal.length);
+  
+  //console.log('Buffers: ', buffers);
   //const texture = loadTexture(gl, 'heightmap.png');
   // var textureData = new Uint8Array([
   //   25,  64, 128,
@@ -143,21 +168,36 @@ function main() {
 
     const texture = createTexture(gl,textureData)
     
+    if(textureData != null){
+      
+       //buffers.vertexNormals = initNormals(gl, planeDimension, planeDimension)
+      buffers.vertexNormals = initNormals(gl, planeDimension, planeDimension, textureData)
+      
+    }
+    
+    //const buffers = initPlaneBuffers(gl, planeDimension, planeDimension);
     const colorTexture = createTexture(gl,colorData)
-    //colorTexture.forEach(element => {
-    //  element  = 0;
-    //});
+    
     
     drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime);
-
+    
     requestAnimationFrame(render)
   }
   requestAnimationFrame(render)
 }
 
 
+
+  //console.log(calcNormals);
+  
+ 
+
+
+
+
 function setHeightmap(heightMapData){
   textureData = heightMapData;
+  
 }
 function setColorData(data){
   colorData = data;
@@ -171,7 +211,7 @@ gl.bindTexture(gl.TEXTURE_2D, texture);
 const alignment = 1;
 gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
 // Fill the texture with a 1x1 blue pixel.
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 250, 250, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 320, 320, 0, gl.RGBA, gl.UNSIGNED_BYTE,
              heightmapData );
 
  
@@ -302,7 +342,7 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, d
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.positions);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexPosition,
         numComponents,
@@ -322,7 +362,7 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, d
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureCoord);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureCoordinates);
     gl.vertexAttribPointer(
         programInfo.attribLocations.textureCoord,
         numComponents,
@@ -334,6 +374,7 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, d
         programInfo.attribLocations.textureCoord);
   }
 
+    
   // Tell WebGL how to pull out the normals from
   // the normal buffer into the vertexNormal attribute.
   {
@@ -342,7 +383,7 @@ function drawScene(gl, programInfo, buffers, texture, colorTexture, deltaTime, d
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertexNormals);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexNormal,
         numComponents,

@@ -156,7 +156,7 @@ function clear(){
 }
 
 function generate(){
-    var imageData = context.getImageData(0, 0, 250, 250);
+    var imageData = context.getImageData(0, 0, 320, 320);
     console.log(imageData);
     var array = new Uint8Array(imageData.data.buffer);
     setHeightmap(array);
