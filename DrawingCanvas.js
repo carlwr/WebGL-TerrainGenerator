@@ -59,7 +59,8 @@ function init()
     context.strokeStyle = 'rgb(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
     context.lineWidth = weightSlider.value;                         // Size Initialize value as weight slider
     context.lineJoin = "round";             // Style
-    context.shadowColor = 'rgb(255, 255, 255)';
+    // context.shadowColor = 'rgb(255, 255, 255)';
+    context.shadowColor = 'rgb(' + color + ','  + color + ', '  + color + ')';
     context.shadowBlur  = 100;
 }
 
@@ -156,7 +157,7 @@ function clear(){
 }
 
 function generate(){
-    var imageData = context.getImageData(0, 0, 250, 250);
+    var imageData = context.getImageData(0, 0, 320, 320);
     console.log(imageData);
     var array = new Uint8Array(imageData.data.buffer);
     setHeightmap(array);

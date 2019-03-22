@@ -1,5 +1,5 @@
 var planeDimension  = 50;
-var cubeRotation    = 170.0;
+var cubeRotation    = 170;
 var zoom            = -2;
 var textureData;
 var colorData;
@@ -167,11 +167,11 @@ function setColorData(data){
 function createTexture(gl, heightmapData) {
  var texture = gl.createTexture();
 gl.bindTexture(gl.TEXTURE_2D, texture);
- 
+
 const alignment = 1;
 gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
 // Fill the texture with a 1x1 blue pixel.
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 250, 250, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 320, 320, 0, gl.RGBA, gl.UNSIGNED_BYTE,
              heightmapData );
 
  
