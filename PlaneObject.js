@@ -293,22 +293,25 @@ function createBuffers(width , height){
     var texturePos = 0;
     var multiplier = 1;             // Plane size
 
-    for(var i = 0.0; i<= width; i += 1.0){
-        for(var j = 0.0; j<= height; j += 1.0){
+    for(var i = 0.0; i<= height; i += 1.0){
+        for(var j = 0.0; j<= width; j += 1.0){
 
             //create vertex coords
-            positions[bufferPos] = (1./width * j) * multiplier;
+            positions[bufferPos] = (1./width * j - 0.5) * multiplier;
             bufferPos++;
             positions[bufferPos] = 0.;
             bufferPos++;
-            positions[bufferPos] = (1./height * i) * multiplier;
+            positions[bufferPos] = (1./height * i- 0.5) * multiplier;
             bufferPos++;
 
             //create texture coords
+            //if( i >1 && i < height -1 && j > 1 && j < width -1){
+
             textureCoord[texturePos] = 1./width * j;
             texturePos++;
             textureCoord[texturePos] = 1./height * i;
             texturePos++;
+            //}
 
             //create normals
             normals[normalPos] = 0.;
