@@ -1,4 +1,4 @@
-var planeDimension  = 11;
+var planeDimension  = 10;
 var cubeRotation    = [0,0];
 var zoom            = -2;
 var textureData;
@@ -88,7 +88,7 @@ function main() {
 
       
       highp vec3 ambientLight = vec3(0.01, 0.01, 0.01);
-      highp vec3 directionalLightColor = vec3(0.2, 0.2, 0.2);
+      highp vec3 directionalLightColor = vec3(0.5, 0.5, 0.5);
       highp vec3 directionalVector = normalize(vec3(0, 1, 0));
       highp vec3 normal = normalize(vNormal);
       highp float light = max(dot(normal, directionalVector),0.0);
@@ -104,7 +104,7 @@ function main() {
       }
       else{
         gl_FragColor = vec4(texelColor.rgb, texelHeight.a);
-    
+        //gl_FragColor = vec4(vec3(0,0,1), texelHeight.a);
       }
       gl_FragColor.rgb += lighting;
     }

@@ -372,7 +372,8 @@ function calculateNormals(width, height, updatedTextureData){
   }
   */
   var pixelPos = Math.sqrt(updatedTextureData.length/4)
-
+  //console.log("Position");
+  
   for(var i = 0; i < indices.length; i += 3){
     // console.log("Now working on " + i);
     var u1 = textureCoord[indices[i]*2]
@@ -431,9 +432,9 @@ function calculateNormals(width, height, updatedTextureData){
     //console.log(indices[i] + " : " + pixeldist1,indices[i+1] + " : " + pixeldist2,indices[i+2] + " : " + pixeldist3);
     
 
-    var offset1 = updatedTextureData[texturePos1] * 0.5
-    var offset2 = updatedTextureData[texturePos2] * 0.5
-    var offset3 = updatedTextureData[texturePos3] * 0.5
+    var offset1 = updatedTextureData[texturePos1] /(255 * 2)
+    var offset2 = updatedTextureData[texturePos2] /(255 * 2)
+    var offset3 = updatedTextureData[texturePos3] /(255 * 2)
     //console.log(indices[i] + " " + indices[i+1] + " " + indices[i+2]);
     //console.log(updatedTextureData);
     
@@ -462,10 +463,10 @@ function calculateNormals(width, height, updatedTextureData){
     count ++;
     
     
-    var pos3 = [positions[indices[i] * 3],positions[indices[i] * 3+1] + offset3,positions[indices[i] * 3+2]];
-    var pos1 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset1,positions[indices[i+1] * 3 + 2]];
-    var pos2 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset2,positions[indices[i+2]* 3 +2]];
-    
+    var pos3 = [positions[indices[i] * 3],positions[indices[i] * 3+1] + offset1,positions[indices[i] * 3+2]];
+    var pos1 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset2,positions[indices[i+1] * 3 + 2]];
+    var pos2 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset3,positions[indices[i+2]* 3 +2]];
+    //console.log(pos1 + " " + pos2 + " " + pos3);
     var tangent = [pos2[0] - pos1[0],pos2[1] - pos1[1],pos2[2] - pos1[2]]
     
     var bitangent = [pos3[0] - pos1[0],pos3[1] - pos1[1],pos3[2] - pos1[2]]
@@ -481,10 +482,10 @@ function calculateNormals(width, height, updatedTextureData){
     calcNormals[count] = normalvector[2];
     count ++;
     
-    var pos2 = [positions[indices[i] * 3],positions[indices[i] * 3+1] + offset2,positions[indices[i] * 3+2]];
-    var pos3 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset3,positions[indices[i+1] * 3 + 2]];
-    var pos1 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset1,positions[indices[i+2]* 3 +2]];
-    
+    var pos2 = [positions[indices[i] * 3],positions[indices[i] * 3+1] + offset1,positions[indices[i] * 3+2]];
+    var pos3 = [positions[indices[i+1] * 3],positions[indices[i+1] * 3 + 1] + offset2,positions[indices[i+1] * 3 + 2]];
+    var pos1 = [positions[indices[i+2] * 3],positions[indices[i+2]* 3 + 1] + offset3,positions[indices[i+2]* 3 +2]];
+    //console.log(pos1 + " " + pos2 + " " + pos3);
     var tangent = [pos2[0] - pos1[0],pos2[1] - pos1[1],pos2[2] - pos1[2]]
     
     var bitangent = [pos3[0] - pos1[0],pos3[1] - pos1[1],pos3[2] - pos1[2]]
@@ -500,7 +501,7 @@ function calculateNormals(width, height, updatedTextureData){
     calcNormals[count] = normalvector[2];
     count ++;
   }
-  //onsole.log(calcNormals);
+  //console.log(calcNormals);
   return calcNormals;
 }
 
