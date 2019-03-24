@@ -1,5 +1,5 @@
 var planeDimension  = 20;
-var cubeRotation    = [0,0];
+var cubeRotation    = [20,-100];
 var zoom            = -2;
 var textureData;
 var colorData;
@@ -84,7 +84,7 @@ function main() {
     uniform sampler2D uSampler;
 
     void main(void) {
-      highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
+      highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord)*0.5;
 
       
       highp vec3 ambientLight = vec3(0.1, 0.1, 0.1);
@@ -96,14 +96,14 @@ function main() {
 
       highp vec4 texelHeight = texture2D(uSampler, vTextureCoord);
       if(texelHeight == vec4(0.0,0.0,0.0,1.0)){
-        gl_FragColor = vec4(vec3(0.6,0.8,1.0) , 1.0);
+        gl_FragColor = vec4(vec3(0.3,0.5,1.0) , 1.0);
       }
       else if(texelHeight.r < 0.03 && texelHeight.g < 0.03 && texelHeight.b < 0.03){
-        gl_FragColor = vec4(vec3(0.8,0.9,1.0), 1.0);
+        gl_FragColor = vec4(vec3(0.4,0.6,1.0), 1.0);
         
       }
       else{
-        gl_FragColor = vec4(texelColor.rgb, texelHeight.a);
+        gl_FragColor = vec4(texelColor.rgb + texelHeight.rgb, texelHeight.a);
         //gl_FragColor = vec4(vec3(0,0,1), texelHeight.a);
       }
       gl_FragColor.rgb += lighting;
