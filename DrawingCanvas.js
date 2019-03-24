@@ -55,14 +55,16 @@ function init()
 
 
     hmContext = maps.heightmap.context;
-    hmContext.fillStyle = "black";
-    hmContext.fillRect(0, 0, hmContext.canvas.width, hmContext.canvas.height);
+    setBlackBackground(hmContext);
+
     color = opacitySlider.value * 2.55;
     setHeightStrokeStyle(color);
 
     colorCanvas = document.getElementById("colormap");
     maps.colormap.context = colorCanvas.getContext("2d");
     cmContext = maps.colormap.context;
+    setBlackBackground(cmContext);
+
     setEventListeners(colorCanvas);
     weightSlider2 = document.getElementById("weightSlider2");
     setWeightSlider(maps.colormap.context, weightSlider2);
@@ -123,6 +125,11 @@ function setOpacitySlider(ctx){
         ctx.strokeStyle = 'rgb(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
         ctx.shadowColor = 'rgb(' + color + ','  + color + ', '  + color + ')';
     };
+}
+
+function setBlackBackground(ctx){
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 function setHeightStrokeStyle(color){
