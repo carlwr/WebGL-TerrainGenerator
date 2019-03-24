@@ -5,11 +5,82 @@
 
 
 //printBuffers(createBuffers(4,4));
-
-const indices = [];
-const positions = []; 
+var indices = [];
+var positions = []; 
 var textureCoord = []; 
 var normalBuffer
+
+main();
+function main(){
+
+  indices = [0,1,3,
+             1,4,3,
+             1,2,4,
+             2,5,4,
+             4,5,7,
+             5,8,7,
+             5,6,8,
+             6,9,8
+            ]
+
+  positions = [0,0,0,
+              0.5,0,0,
+              1,0,0,
+              0,0,0.5,
+              0.5,0,0.5,
+              1,0,0.5,
+              0,0,1,
+              0.5,0,1,
+              1,0,1
+            ]
+  textureCoord = [
+                  0,0,
+                  0.5,0,
+                  1,0,
+                  0,0.5,
+                  0.5,0.5,
+                  1,0.5,
+                  0,1,
+                  0.5,1,
+                  1,1
+
+                  ]
+    var textureData = [
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0,
+      0,0,0,0
+    ]
+    console.log("Lengthes: position: " + positions.length + 
+              " indices: " + indices.length + 
+                " texCoords" + textureCoord.length +
+                 " height: " + textureData.length)
+    norm = calculateNormals(3,3, textureData);
+   // console.log(norm);
+    
+}
+
+
 
 function printBuffers( buffers){
     if(!buffers){
@@ -355,80 +426,51 @@ function createBuffers(width , height){
     return [ positions,normals, textureCoord, indices];
 }
 
+function calculateTexturePos(indice, distanceBetweenVertices){
+  var pixeldist;
+  var u = textureCoord[indices[indice]*2]
+  var v = textureCoord[indices[indice]*2 + 1]
+  if(v == 0){
+    pixeldist =  distanceBetweenVertices *u 
+    
+  }
+  else{
+    pixeldist =   (distanceBetweenVertices)*(distanceBetweenVertices-2)/4 + distanceBetweenVertices *u
+  }
+
+  //console.log(u + " " + v + " " +pixeldist);
+  
+  off = 0;
+  
+  if(u == 0){
+    pixeldist += off;
+  }
+  else if(u == 1){
+    pixeldist -= off;
+  }
+  
+  //console.log(indices[indice] + " " + pixeldist);
+  
+  texturePos = Math.floor(pixeldist);
+  return texturePos;
+}
+
 function calculateNormals(width, height, updatedTextureData){
   
   var calcNormals = []
   var count = 0;
-  var pixeldist = updatedTextureData.length /(width*height-1);
-  /*
-  for(var i = 0; i < 16; i++){
-    console.log(" ");
-    console.log("pixelHeight on " + Math.floor(pixeldist * i) + " / " + updatedTextureData.length);
-    
-    console.log(updatedTextureData[Math.floor(pixeldist * i)] );
-    console.log(" " + width * height);
-    
-
-  }
-  */
-  var pixelPos = Math.sqrt(updatedTextureData.length/4)
-  //console.log("Position");
+  
+  var distanceBetweenVertices = (updatedTextureData.length/(indices.length)) * (width-1);
+  //console.log(distanceBetweenVertices);
   
   for(var i = 0; i < indices.length; i += 3){
     // console.log("Now working on " + i);
-    var u1 = textureCoord[indices[i]*2]
-    var v1 = textureCoord[indices[i]*2 + 1]
-    if(v1 == 0){
-      pixeldist1 =  pixelPos * u1 * 4 + (pixelPos)*(pixelPos*v1) * 4
-      
-    }else{
-      pixeldist1 =   (pixelPos)*(pixelPos*v1) * 4 - pixelPos * (1-u1) * 4
-    }
-    //console.log(indices[i] + " "  + u1 + " "  + v1);
-    off = 4;
     
-    if(u1 == 0){
-      pixeldist1 += off;
-    }
-    else if(u1 == 1){
-      pixeldist1 -= off;
-    }
+    texturePos1 = calculateTexturePos(i, distanceBetweenVertices);
     
-    var u2 = textureCoord[indices[i+1]*2]
-    var v2 = textureCoord[indices[i+1]*2 + 1]
-    if(v1 == 0){
-      pixeldist2 =  pixelPos * u2 * 4 + (pixelPos)*(pixelPos*v2) * 4
-      
-    }else{
-      pixeldist2 =   (pixelPos)*(pixelPos*v2) * 4 - pixelPos * (1-u2) * 4
-    }
-    if(u2 == 0){
-      pixeldist2 += off;
-    }
-    else if(u2 == 1){
-      pixeldist2 -= off;
-    }
-
-    var u3 = textureCoord[indices[i+2]*2]
-    var v3 = textureCoord[indices[i+2]*2 + 1]
-    if(v1 == 0){
-      pixeldist3 =  pixelPos * u3 * 4 + (pixelPos)*(pixelPos*v3) * 4
-      
-    }else{
-      pixeldist3 =   (pixelPos)*(pixelPos*v3) * 4 - pixelPos * (1-u3) * 4
-    }
-    if(u3 == 0){
-      pixeldist3 += off;
-    }
-    else if(u3 == 1){
-      pixeldist3 -= off;
-    }
-    //console.log(i + " " + pixeldist + " u " + textureCoord[indices[i]*2] * (width-1) + " v " + textureCoord[indices[i]*2 + 1] * (height-1));
+    texturePos2 = calculateTexturePos(i+1, distanceBetweenVertices);
     
-
-    texturePos1 = Math.floor(pixeldist1);
-    texturePos2 = Math.floor(pixeldist2);
-    texturePos3 = Math.floor(pixeldist3);
+    texturePos3 = calculateTexturePos(i+2, distanceBetweenVertices);
     //console.log(indices[i] + " : " + pixeldist1,indices[i+1] + " : " + pixeldist2,indices[i+2] + " : " + pixeldist3);
     
 
@@ -439,7 +481,7 @@ function calculateNormals(width, height, updatedTextureData){
     //console.log(updatedTextureData);
     
     //console.log(indices.length + "   " +updatedTextureData.length + "      " +texturePos1 + " " + texturePos2 + " " + texturePos3);
-    //console.log(indices[i], offset1,indices[i+1] ,offset2,indices[i+2], offset3)
+      //console.log(indices[i], offset1,indices[i+1] ,offset2,indices[i+2], offset3)
     
     
     var pos1 = [positions[indices[i] * 3],positions[indices[i] * 3 + 1 ] + offset1,positions[indices[i] * 3+2]];

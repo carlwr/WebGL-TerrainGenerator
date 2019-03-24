@@ -62,7 +62,7 @@ function main() {
       vec4 newVertexPos = aVertexPosition + vec4(0,y,0,0) +vec4(0,h,0,0) ;
       gl_Position = uProjectionMatrix * uModelViewMatrix * newVertexPos;
       
-      vNormal = mat3(uNormalMatrix) * aVertexNormal;
+      vNormal = mat3(uNormalMatrix) * vec3(0,1,0);//aVertexNormal;
 
       // Apply lighting effect
       highp vec3 ambientLight = vec3(0.1, 0.1, 0.1);
@@ -87,8 +87,8 @@ function main() {
       highp vec4 texelColor = texture2D(uColorSampler, vTextureCoord);
 
       
-      highp vec3 ambientLight = vec3(0.01, 0.01, 0.01);
-      highp vec3 directionalLightColor = vec3(0.5, 0.5, 0.5);
+      highp vec3 ambientLight = vec3(0.1, 0.1, 0.1);
+      highp vec3 directionalLightColor = vec3(0.2, 0.2, 0.2);
       highp vec3 directionalVector = normalize(vec3(0, 1, 0));
       highp vec3 normal = normalize(vNormal);
       highp float light = max(dot(normal, directionalVector),0.0);
