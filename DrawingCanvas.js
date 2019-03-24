@@ -20,16 +20,22 @@ var maps = {
         X: [],
         Y: [],
         weight: [],
-        stroke: [],
+        strokeStyle: [],
+        lineWidth: [],
         clickDrag: [],
-        context: ''
+        shadowColor: [],
+        shadowBlur: [],
+        context: '',
     },
     'colormap': {
         X: [],
         Y: [],
         weight: [],
-        stroke: [],
+        strokeStyle: [],
+        lineWidth: [],
         clickDrag: [],
+        shadowColor: [],
+        shadowBlur: [],
         context: ''
     }
 };
@@ -56,8 +62,9 @@ function init()
 
     hmContext = maps.heightmap.context;
     setBlackBackground(hmContext);
+    generate('heightmap');
 
-    color = opacitySlider.value * 2.55;
+    color = opacitySlider.value;
     setHeightStrokeStyle(color);
 
     colorCanvas = document.getElementById("colormap");
@@ -99,7 +106,7 @@ function init()
     changeColor();
 
     cmContext.lineJoin = "round";
-
+    cmContext.shadowBlur  = 50;
 
 }
 
@@ -113,7 +120,8 @@ function setEventListeners(canvas){
 function setWeightSlider(ctx, slider){
     ctx.lineWidth = slider.value;                         // Size Initialize value as weight slider
     slider.oninput = function(){
-        ctx.lineWidth = this.value
+        ctx.lineWidth = this.value;
+        // ctx.shadowBlur = this.value * 0.4;
     };
 }
 
@@ -121,8 +129,8 @@ function setOpacitySlider(ctx){
     opacitySlider = document.getElementById("opacitySlider");
     opacitySlider.oninput = function(){
         // console.log('slider', this.value);
-        color = this.value * 2.55;
-        ctx.strokeStyle = 'rgb(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
+        color = this.value;
+        ctx.strokeStyle = 'rgba(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
         ctx.shadowColor = 'rgb(' + color + ','  + color + ', '  + color + ')';
     };
 }
@@ -133,17 +141,18 @@ function setBlackBackground(ctx){
 }
 
 function setHeightStrokeStyle(color){
-    hmContext.strokeStyle = 'rgb(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
+    hmContext.strokeStyle = 'rgba(' + color + ','  + color + ', '  + color + ', ' + 0.1 + ')';
     hmContext.lineWidth = weightSlider.value;                         // Size Initialize value as weight slider
     hmContext.lineJoin = "round";             // Style
     // context.shadowColor = 'rgb(255, 255, 255)';
     hmContext.shadowColor = 'rgb(' + color + ','  + color + ', '  + color + ')';
-    hmContext.shadowBlur  = 100;
+    hmContext.shadowBlur  = 20;
 }
 
 
 function changeColor(){
-    cmContext.strokeStyle = 'rgb(' + red + ','  + green + ', '  + blue + ')';
+    cmContext.strokeStyle = 'rgba(' + red + ','  + green + ', '  + blue + ', ' + 0.1 +  ')';
+    cmContext.shadowColor = 'rgb(' + red + ','  + green + ', '  + blue + ')';
 }
 
 function startDrawing(e){
@@ -157,7 +166,6 @@ function stopDrawing(e){
 }
 
 function draw(e){
-    console.log("Draw: ", e.target.id);
     var map = e.target.id;
     if(drawing){
         var mouseX = e.pageX - this.offsetLeft;
@@ -165,32 +173,35 @@ function draw(e){
 
         addClick(mouseX, mouseY, map, true);
         redraw(map);
-        // if(drawing){
-        //     addSingle(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-        //     // context.stroke();
-        //     redraw();
-        // }
     }
 }
 
 
 function addClick(x, y, map, dragging)
 {
+    var ctx = maps[map].context;
     maps[map].X.push(x);
     maps[map].Y.push(y);
-    maps[map].weight.push(maps[map].context.lineWidth);
-    maps[map].stroke.push(maps[map].context.strokeStyle);
+    maps[map].weight.push(ctx.lineWidth);
+    maps[map].strokeStyle.push(ctx.strokeStyle);
+    maps[map].lineWidth.push(ctx.lineWidth);
     maps[map].clickDrag.push(dragging);
+    maps[map].shadowBlur.push(ctx.shadowBlur);
+    maps[map].shadowColor.push(ctx.shadowColor);
 }
 
 
 function redraw(map){
+    // console.log("Redraw: ", maps[map].context);
     var context = maps[map].context;
     var weight = maps[map].weight;
-    var stroke = maps[map].stroke;
+    var stroke = maps[map].strokeStyle;
     var clickX = maps[map].X;
     var clickY =  maps[map].Y;
     var clickDrag = maps[map].clickDrag;
+    var shadowBlur = maps[map].shadowBlur;
+    var shadowColor = maps[map].shadowColor;
+    var lineWidth = maps[map].lineWidth;
 
 
     context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
@@ -200,6 +211,9 @@ function redraw(map){
     for(var i = 0; i < clickX.length; i++) {
         context.lineWidth = weight[i];
         context.strokeStyle = stroke[i];
+        context.shadowColor = shadowColor[i];
+        context.shadowBlur = shadowBlur[i];
+        context.lineWidth = lineWidth[i];
         context.beginPath();
         if(clickDrag[i] && i){
             context.moveTo(clickX[i-1], clickY[i-1]);
@@ -229,8 +243,12 @@ function clearMap(map){
     maps[map].X = [];           // X coordinates
     maps[map].Y = [];           // Y coordinates
     maps[map].weight = [];
-    maps[map].stroke = [];
+    maps[map].strokeStyle = [];
     maps[map].clickDrag = [];
+    maps[map].lineWidth = [];
+    maps[map].clickDrag = [];
+    maps[map].shadowColor = [];
+    maps[map].shadowBlur = [];
     generate(map);
 }
 

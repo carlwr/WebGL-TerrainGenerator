@@ -1,4 +1,4 @@
-var planeDimension  = 20;
+var planeDimension  = 50;
 var cubeRotation    = [20,-100];
 var zoom            = -2;
 var textureData;
