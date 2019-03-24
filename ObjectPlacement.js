@@ -31,7 +31,6 @@ canvas.addEventListener('mousedown', function(event) {
 
 canvas.addEventListener('mouseup', function(event) {
     
-    console.log("angle: " + cubeRotation[1]);
     dragging = false;
     
 }, false);

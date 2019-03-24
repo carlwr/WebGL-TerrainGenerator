@@ -183,8 +183,10 @@ function clearMap(map){
     generate(map);
 }
 
-function generate(map){
+
+function generate(){
     var imageData = maps[map].context.getImageData(0, 0, 320, 320);
+    console.log(imageData);
     var array = new Uint8Array(imageData.data.buffer);
     if(map == 'heightmap'){
         setHeightmap(array);
