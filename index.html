@@ -5,42 +5,53 @@
     <title>Terrain Generator</title>
     <link rel="stylesheet" href="webgl.css" type="text/css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet">
+    <link rel="shortcut icon" href="/Users/edda/Desktop/School/GEDE/Final/WebGL-TerrainGenerator/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/Users/edda/Desktop/School/GEDE/Final/WebGL-TerrainGenerator/favicon.ico" type="image/x-icon">
     <!--<link rel="stylesheet" href="https://www.w3schools.com/lib/w3color.js">-->
   </head>
 
   <body>
-
+        <div class="pagetitle">Terrain Generator</div>
       <div class="aligner">
           <div class="canvasContainer">
               <div class="editingCanvasContainer">
                   <div class="heightMapWrapper">
                       <div class="buttons">
                           <div class="weightButton" style="padding: 10px;">
-                            <div>Size</div>
+                            <div class="amatic">Size</div>
                             <input type="range" min="1" max="100" value="50" class="slider" id="weightSlider">
                           </div>
                             <div class="opacityButton" style="padding: 10px;">
-                            Opacity
+                            <div class="amatic">Opacity</div>
                           <input type="range" min="1" max="100" value="50" class="slider" id="opacitySlider">
                           </div>
-                          <button type="button" class="btn btn-info" id="clearButton">Clear</button>
+                          <div class="clearbutton">
+                            <button type="button" class="btn-lime amatic" id="clearHeightmap">Clear</button>
+                          </div>
                       </div>
                     <canvas id="heightmap" class="canvas" width="320" height="320"></canvas>
                   </div>
                   <div class="colorMapWrapper">
                       <div class="buttons">
                           <div class="weightButton" style="padding: 10px;">
-                              <div>Size</div>
+                              <div class="amatic">Size</div>
                               <input type="range" min="1" max="100" value="50" class="slider" id="weightSlider2">
                           </div>
-                          <div class="colorpicker">
-                              <button type="button" class="btn btn-danger type active" autofocus="autofocus" onclick="setColor('#dc3545')">Red</button>
-                              <button type="button" class="btn btn-warning type" onclick="setColor('#ffc107')">Yellow</button>
-                              <button type="button" class="btn btn-success type" onclick="setColor('#28a745')">Green</button>
-                              <button type="button" class="btn btn-secondary type" onclick="setColor('#6c757d')">Grey</button>
-                              <button type="button" class="btn btn-info type" onclick="setColor('#6c757d')">Cyan</button>
-                              <!--<button type="button" class="btn btn-light" onclick="setColor()">Light</button>-->
-                              <!--<button type="button" class="btn btn-dark" onclick="setColor()">Dark</button>-->
+                          <div class="colorSlider" style="padding: 10px;">
+                              <div class="amatic colorname">R</div>
+                              <input type="range" min="1" max="255" value="50" class="slider" id="redSlider">
+                          </div>
+                          <div class="colorSlider" style="padding: 10px;">
+                              <div class="amatic colorname">G</div>
+                              <input type="range" min="1" max="255" value="50" class="slider" id="greenSlider">
+                          </div>
+                          <div class="colorSlider" style="padding: 10px;">
+                              <div class="amatic colorname">B</div>
+                              <input type="range" min="1" max="255" value="50" class="slider" id="blueSlider">
+                          </div>
+                          <div class="clearbutton">
+                              <button type="button" class="btn-lime amatic" id="clearColormap">Clear</button>
                           </div>
                       </div>
                   <canvas id="colormap" class="canvas" width="320" height="320"></canvas>
@@ -49,13 +60,14 @@
               <canvas id="glcanvas" class="canvas" width="700" height="700"></canvas>
           </div>
       </div>
+        <div class="bynames">by Carl & Edda</div>
   </body>
 
 
   <script src="gl-matrix.js"></script>
   <script src="PlaneObject.js"></script>
   <script src="DrawingCanvas.js"></script>
-  <script src="colorCanvas.js"></script>
+  <!--<script src="colorCanvas.js"></script>-->
   <script src="main.js"></script>
   <script src="ObjectPlacement.js"></script>
   <script src="testing.js"></script>
