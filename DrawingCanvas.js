@@ -147,7 +147,6 @@ function changeColor(){
 }
 
 function startDrawing(e){
-    console.log("draw!");
     drawing = true;
     draw(e);
 }
@@ -177,7 +176,6 @@ function draw(e){
 
 function addClick(x, y, map, dragging)
 {
-    console.log('Map: ', map);
     maps[map].X.push(x);
     maps[map].Y.push(y);
     maps[map].weight.push(maps[map].context.lineWidth);
@@ -224,13 +222,14 @@ function clearColormap(){
 }
 
 function clearMap(map){
-    console.log('Clearing: ', map);
     var ctx = maps[map].context;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clears the canvas
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     maps[map].X = [];           // X coordinates
     maps[map].Y = [];           // Y coordinates
+    maps[map].weight = [];
+    maps[map].stroke = [];
     maps[map].clickDrag = [];
     generate(map);
 }
@@ -238,7 +237,6 @@ function clearMap(map){
 
 function generate(map){
     var imageData = maps[map].context.getImageData(0, 0, 320, 320);
-    console.log(imageData);
     var array = new Uint8Array(imageData.data.buffer);
     if(map == 'heightmap'){
         setHeightmap(array);
