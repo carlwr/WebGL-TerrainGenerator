@@ -1,4 +1,4 @@
-var planeDimension  = 10;
+var planeDimension  = 20;
 var cubeRotation    = [0,0];
 var zoom            = -2;
 var textureData;
@@ -207,7 +207,7 @@ function setColorData(data){
 function createTexture(gl, heightmapData) {
  var texture = gl.createTexture();
 gl.bindTexture(gl.TEXTURE_2D, texture);
- 
+
 const alignment = 1;
 gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
 // Fill the texture with a 1x1 blue pixel.
