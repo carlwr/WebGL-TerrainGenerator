@@ -8,7 +8,11 @@ var heightCanvas;
 var colorCanvas;
 var hmContext;
 var cmContext;
+
 var color;
+var red;
+var green;
+var blue;
 
 // Arrays for heightmap properties
 var maps = {
@@ -30,11 +34,13 @@ var maps = {
     }
 };
 
-
 // Sliders
 var weightSlider;
 var opacitySlider;
 var weightSlider2;  // Color canvas
+var redSlider;
+var greenSlider;
+var blueSlider;
 
 
 function init()
@@ -47,26 +53,52 @@ function init()
     setWeightSlider(maps.heightmap.context, weightSlider);
     setOpacitySlider(maps.heightmap.context);
 
-    colorCanvas = document.getElementById("colormap");
-    maps.colormap.context = colorCanvas.getContext("2d");
-    setEventListeners(colorCanvas);
-    weightSlider2 = document.getElementById("weightSlider2");
-    setWeightSlider(maps.colormap.context, weightSlider);
-
 
     hmContext = maps.heightmap.context;
     hmContext.fillStyle = "black";
     hmContext.fillRect(0, 0, hmContext.canvas.width, hmContext.canvas.height);
+    color = opacitySlider.value * 2.55;
+    setHeightStrokeStyle(color);
+
+    colorCanvas = document.getElementById("colormap");
+    maps.colormap.context = colorCanvas.getContext("2d");
+    cmContext = maps.colormap.context;
+    setEventListeners(colorCanvas);
+    weightSlider2 = document.getElementById("weightSlider2");
+    setWeightSlider(maps.colormap.context, weightSlider2);
+
 
 
     // Clear buttons
-    document.getElementById("clearHeightmap").onclick = clearMap('heightmap');
-    document.getElementById("clearColormap").onclick = clearMap('colormap');
+    document.getElementById("clearHeightmap").onclick = clearHeightmap;
+    document.getElementById("clearColormap").onclick = clearColormap;
+
+    redSlider = document.getElementById("redSlider");
+    redSlider.oninput = function(){
+        red = this.value;
+        changeColor();
+    };
+
+    greenSlider = document.getElementById("greenSlider");
+    greenSlider.oninput = function(){
+        green = this.value;
+        changeColor();
+    };
+
+    blueSlider = document.getElementById("blueSlider");
+    blueSlider.oninput = function(){
+        blue = this.value;
+        changeColor();
+    };
+
+    red = redSlider.value;
+    green = greenSlider.value;
+    blue = blueSlider.value;
+    changeColor();
+
+    cmContext.lineJoin = "round";
 
 
-
-    color = opacitySlider.value * 2.55;
-    setHeightStrokeStyle(color);
 }
 
 
@@ -103,6 +135,10 @@ function setHeightStrokeStyle(color){
 }
 
 
+function changeColor(){
+    cmContext.strokeStyle = 'rgb(' + red + ','  + green + ', '  + blue + ')';
+}
+
 function startDrawing(e){
     console.log("draw!");
     drawing = true;
@@ -137,9 +173,9 @@ function addClick(x, y, map, dragging)
     console.log('Map: ', map);
     maps[map].X.push(x);
     maps[map].Y.push(y);
-    // map.weight.push(map.context.lineWidth);
-    // map.stroke.push(map.context.strokeStyle);
-    // map.clickDrag.push(dragging);
+    maps[map].weight.push(maps[map].context.lineWidth);
+    maps[map].stroke.push(maps[map].context.strokeStyle);
+    maps[map].clickDrag.push(dragging);
 }
 
 
@@ -172,14 +208,23 @@ function redraw(map){
     generate(map);
 }
 
+function clearHeightmap(){
+    clearMap('heightmap');
+}
+
+function clearColormap(){
+    clearMap('colormap');
+}
+
 function clearMap(map){
+    console.log('Clearing: ', map);
     var ctx = maps[map].context;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clears the canvas
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     maps[map].X = [];           // X coordinates
     maps[map].Y = [];           // Y coordinates
-    maps[map].lickDrag = [];
+    maps[map].clickDrag = [];
     generate(map);
 }
 
@@ -191,8 +236,7 @@ function generate(map){
     if(map == 'heightmap'){
         setHeightmap(array);
     } else if (map == 'colormap'){
-
-
+        setColorData(array);
     }
 }
 
